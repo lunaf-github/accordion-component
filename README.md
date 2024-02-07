@@ -1,4 +1,4 @@
-#Simple accordion (expand or collapse) behavior
+# Simple accordion (expand or collapse) behavior
 
 Technology: HTML, CSS, and JS
 
