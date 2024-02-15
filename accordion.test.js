@@ -1,31 +1,36 @@
 import {fireEvent, getByTestId} from "@testing-library/dom"
-import "@testing-library/jest-dom/extend-expect"
-import jsdom, {JSDOM} from "jsdom"
+import { dirname } from 'path';
+import "@testing-library/jest-dom"
+import {JSDOM} from "jsdom"
 import path from "path"
+import { fileURLToPath } from "url";
 
-const BASE = path.resolve(__dirname, "../src")
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-let virtualConsole
+const BASE = path.resolve(__dirname, "./src")
+
 let dom, body
 
 describe("accordion test", function () {
     beforeEach(async () => {
-        virtualConsole = new jsdom.VirtualConsole()
-        virtualConsole.on("error", console.error)
-        dom = await JSDOM.fromFile(`${BASE}/index.html`, {
+        dom = await JSDOM.fromFile(path.join(BASE, '/index.html'), {
             runScripts: "dangerously",
             resources: "usable",
             pretendToBeVisual: true,
-            virtualConsole
         })
+
         await loadDom(dom)
-        body = dom.window.document.body
+        body = dom.window.document.body;
     })
 
     it('shows the 1st item description expanded by default', async function () {
+
         const accordion1 = getByTestId(body, '1')
         const description1 = accordion1.querySelector('.description')
+
         expect(description1).toBeVisible()
+        expect(description1.textContent).toBe('Hello')
 
         const ids = ['2', '3', '4', '5']
         for (const id of ids) {
@@ -52,6 +57,7 @@ describe("accordion test", function () {
     })
 
     it('shows expand icon when item is collapsed', async function () {
+
         const accordion = getByTestId(body, '1')
         const titleSection = accordion.querySelector('.title-section')
         const title = titleSection.querySelector('.title')
@@ -71,6 +77,7 @@ describe("accordion test", function () {
     })
 
     it('shows collapse icon when item is expanded', async function () {
+
         const ids = ['2', '3', '4', '5']
 
         for (const id of ids) {
@@ -94,6 +101,7 @@ describe("accordion test", function () {
     })
 
     it('collapses the item description when clicking on title of expanded item', async function () {
+
         const accordion = getByTestId(body, '1')
         const title = accordion.querySelector('.title')
 
@@ -107,6 +115,7 @@ describe("accordion test", function () {
     })
 
     it('collapses all expanded elements when expanding an another item', async function () {
+
         const accordion1 = getByTestId(body, '1')
 
         let description1 = accordion1.querySelector('.description')
@@ -128,6 +137,7 @@ describe("accordion test", function () {
     })
 
     it('expands more than one item if multi-select is enabled', async function() {
+
         const multiSelect = getByTestId(body, 'multiselect')
         const accordion1 = getByTestId(body, '1')
 
@@ -159,6 +169,7 @@ describe("accordion test", function () {
     });
 
     it('collapses all other items when expanding an item after multi-select has beem disabled', async function() {
+
         const multiSelect = getByTestId(body, 'multiselect')
         const accordion1 = getByTestId(body, '1')
 
@@ -211,8 +222,9 @@ describe("accordion test", function () {
 
 function loadDom(dom) {
     return new Promise((resolve, _) => {
-        virtualConsole.on("log", log => {
-            if (log === "DOM Loaded") resolve(dom)
-        })
-    })
+        dom.window.addEventListener("DOMContentLoaded", () => {
+            console.log("DOM Loaded");
+            resolve(dom);
+        });
+    });
 }
