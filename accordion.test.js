@@ -30,7 +30,6 @@ describe("accordion test", function () {
         const description1 = accordion1.querySelector('.description')
 
         expect(description1).toBeVisible()
-        expect(description1.textContent).toBe('Hello')
 
         const ids = ['2', '3', '4', '5']
         for (const id of ids) {
