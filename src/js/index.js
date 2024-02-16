@@ -19,15 +19,15 @@ const Accordian = (function(config) {
   } 
 
   function init() {
-    // const userState = getLocalStorage();
+    const userState = getLocalStorage();
 
     // state updates
-    // if (userState) {
-    //   state = userState;
-    // } else {
+    if (userState) {
+      state = userState;
+    } else {
       setDescriptionState(config.defaultOpen, true);
-      // initLocalStorage(state);
-    // }
+      initLocalStorage(state);
+    }
 
     (state.multiSelect)? showCheckMark() : hideCheckMark();
 
@@ -157,7 +157,7 @@ const Accordian = (function(config) {
     showCollapseIcon(index); 
     hideExpandIcon(index);
     setDescriptionState(index, true);
-    // setDescriptionStateLocalStorage(index, true)
+    setDescriptionStateLocalStorage(index, true)
   }
   
   function closeSection(index) {
@@ -165,7 +165,7 @@ const Accordian = (function(config) {
     hideCollapseIcon(index);
     showExpandIcon(index);
     setDescriptionState(index, false);
-    // setDescriptionStateLocalStorage(index, false)
+    setDescriptionStateLocalStorage(index, false)
   }
 
   function closeAllSections() {
@@ -173,7 +173,7 @@ const Accordian = (function(config) {
     hideAllCollapseIcons();
     showAllExpendIcons();
     setAllDescriptionStates(false)
-    // setAllDescriptionStatesLocalStorage(false);
+    setAllDescriptionStatesLocalStorage(false);
   }
 
   function isOpen(index) {
@@ -200,7 +200,7 @@ const Accordian = (function(config) {
   function handleToggleMultiSelect(event) {
     const isChecked = event.target.checked;
     setMultiSelect(isChecked);
-    // setMultiSelectStateLocalStorage(isChecked);
+    setMultiSelectStateLocalStorage(isChecked);
   }
 
   // setup events
