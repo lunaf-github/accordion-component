@@ -132,21 +132,27 @@ const Accordian = (function(config) {
   function hideCheckMark() {
     multiSelectCheckbox.checked = false;
   }
+
+  function isVisibleDescription(index) {
+    const description = accordianSectionItems[index].description;
+    const status = description.style.display;
+    return status === 'block';
+  }
   
   function showAllExpendIcons() {
-    accordianSectionItems.forEach((section, index) => {
+    accordianSectionItems.forEach((_, index) => {
       showExpandIcon(index);
     });
   };
   
   function hideAllDescriptions() {
-    accordianSectionItems.forEach((section, index) => {
+    accordianSectionItems.forEach((_, index) => {
       hideDescription(index);
     });
   }
 
   function hideAllCollapseIcons() {
-    accordianSectionItems.forEach((section, index) => {
+    accordianSectionItems.forEach((_, index) => {
       hideCollapseIcon(index);
     });
   }
@@ -176,15 +182,10 @@ const Accordian = (function(config) {
     setAllDescriptionStatesLocalStorage(false);
   }
 
-  function isOpen(index) {
-    const panelStates = getAlldescriptionStates();
-    return panelStates[index];
-  }
-
   // event handlers
   function handleToggleDescription(index) {
     const isMutiSelect = getMultiSelect();
-    const wasOpen = isOpen(index);
+    const wasOpen = isVisibleDescription(index);
 
     if (!isMutiSelect) {
       closeAllSections();
