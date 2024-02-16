@@ -5,30 +5,60 @@ import {JSDOM} from "jsdom"
 import path from "path"
 import { fileURLToPath } from "url";
 
+/* 
+ES6 Modules do not have __filename and __dirname variables. They are only available 
+in CommonJS modules. So I found this work around to create my own dirname using the 
+path module and url module
+*/
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
 const BASE = path.resolve(__dirname, "./src")
 
+/* 
+make the DOM and body element globally available. That way, I can use the beforeEach hook
+to reset the DOM before each test
+*/
 let dom, body
 
 describe("accordion test", function () {
     beforeEach(async () => {
+        // The fromFile static method returns a promise, make sure to use async-await
         dom = await JSDOM.fromFile(path.join(BASE, '/index.html'), {
+
+            // allow the use of scripts
             runScripts: "dangerously",
+
+            // Alows the use exteran resources such ase <script src="url/"></script>
             resources: "usable",
+
+            // This allows JSDOM to simulate rendering the DOM
             pretendToBeVisual: true,
         })
 
+        // Make sure my scripts and other resources are parsed before I start testing
         await loadDom(dom)
+
+        // makes it easier to grab the body DOM object
         body = dom.window.document.body;
     })
 
     it('shows the 1st item description expanded by default', async function () {
-
+        /*
+            getByTestingId is an API from @testing-library/dom. The developers of the library
+            what us to develop tests in the perspective the the user. So, this means that 
+            it is best to grab elements based on the text contents such as labels - what 
+            the user looks for when interacting with the UI. However, there are cases that
+            it is not possible to add labels or texts, so we can create testId data attributes
+            and use that to test dom elements. The getByTestId serves as an excape hatch, and 
+            allows us to grab dom elements best of the testId data attributes. 
+        */
         const accordion1 = getByTestId(body, '1')
         const description1 = accordion1.querySelector('.description')
 
+        /* 
+            To be visible is an API from @testing-library/jest-dom which extends the jest library
+            by adding more assertions such as toBeVisible and toHaveTextContent.
+        */
         expect(description1).toBeVisible()
 
         const ids = ['2', '3', '4', '5']
