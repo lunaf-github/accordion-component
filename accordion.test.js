@@ -18,7 +18,26 @@ const BASE = path.resolve(__dirname, "./src")
 make the DOM and body element globally available. That way, I can use the beforeEach hook
 to reset the DOM before each test
 */
-let dom, body
+let dom, body;
+
+const mockLocalStorage = function() {
+    let store = {};
+
+    return {
+        getItem(key) {
+            return store[key] || null;
+        },
+        setItem(key, value) {
+            store[key] = value.toString();
+        },
+        removeItem(key) {
+            delete store[key];
+        },
+        clear() {
+            store = {};
+        }
+    }
+};
 
 describe("accordion test", function () {
     beforeEach(async () => {
@@ -33,10 +52,25 @@ describe("accordion test", function () {
 
             // This allows JSDOM to simulate rendering the DOM
             pretendToBeVisual: true,
-        })
 
+        })
+        /* 
+        Because we are running our tests outside the browser, we need to mock up our
+        own localStorage. It seems that the current localStorage property is not available
+        for us to use. So we need to overwrite that property with our own. But, the problem 
+        is that this property is read-only. So, we need to use the Object.defineProperty to
+        bypass this restriction. Make sure to add the local storage before the javascript 
+        is loaded because you want to make sure the localStorage is availabe beforehand. If
+        it is not available, you will get the 
+        [SecurityError: localStorage is not available for opaque origins] error
+        */
+
+       Object.defineProperty(dom.window, 'localStorage', {
+           value: mockLocalStorage(),
+        });
+        
         // Make sure my scripts and other resources are parsed before I start testing
-        await loadDom(dom)
+        await loadDom(dom);
 
         // makes it easier to grab the body DOM object
         body = dom.window.document.body;
